@@ -35,9 +35,12 @@
 ซึ่งภาพนี้คือภาพที่ได้จากคำสั่งของ `routel` เพื่อดูสรุปการ Routing ใน Host Linux ของเราจะพบว่าถูกส่งไปหา Virtual Ethernet Link ของ Calico นั่นเองซึ่ง IP ที่เห็นเหล่านี้ก็จะเป็น IP ของ Pod ไม่ก็ Service ต่างๆที่อยู่ใน Kubernetes หมดเลยซึ่งเพื่อนสามารถลองไป Mapping ดูได้จะได้ Link Interface IP ตรงกันเป๊ะๆ
 ![support-matrix](images/ebpf/routel.png)
 
-โดยภาพแบบประกอบรวมกันแบบสมบูรณ์แล้วก็จะออกมาเป็นดั่งนี้ซึ่งตัวอย่างภาพต้องขอบคุณ Calico CNI ที่ออกแบบภาพมาให้นะคับผม ซึ่งหลักการก็คือในส่วนของการ Routing จาก Virtual Ethernet Cable นั้นจะไม่ไปเรียก Iptables เหมือนปกติเพื่อทำการ Routing แต่จำใช้คำสั่ง tc (Traffic Control) ในแต่ล่ะ Calico Network Interface เพื่อไปดูว่ากำลังมี Packet ไหน Routing มาโดยดูจาก Conntrack (เป็นหนึ่งใน Life Cycle ของการ Routing Packet) ซึ่งดูได้จาก https://en.wikipedia.org/wiki/Netfilter (ต้องขอบอกว่าผมเองก็ยังไม่เคยไปเขียนคำสั่งอะไรยุ่งกับระดับ Low Level ขนาดนี้ตรงๆนะคับ TwT เห็นแล้วน้ำตาไหล 5555) และพอมันไม่ผ่าน Iptables ก็เลยไม่เจอปัญหาการ Lookup จาก Iptables ที่ช้านั่นเอง
+โดยภาพแบบประกอบรวมกันแบบสมบูรณ์แล้วก็จะออกมาเป็นดั่งนี้ซึ่งตัวอย่างภาพต้องขอบคุณ Calico CNI ที่ออกแบบภาพมาให้นะคับผม ซึ่งหลักการก็คือในส่วนของการ Routing จาก Virtual Ethernet Cable นั้นจะไม่ไปเรียก Iptables เหมือนปกติเพื่อทำการ Routing แต่จำใช้คำสั่ง tc (Traffic Control) ในแต่ล่ะ Calico Network Interface 
 
 ![support-matrix](images/ebpf/cni-ebpf.png)
+
+เพื่อไปดูว่ากำลังมี Packet ไหน Routing มาโดยดูจาก Conntrack (เป็นหนึ่งใน Life Cycle ของการ Routing Packet) ซึ่งดูได้จาก https://en.wikipedia.org/wiki/Netfilter (ต้องขอบอกว่าผมเองก็ยังไม่เคยไปเขียนคำสั่งอะไรยุ่งกับระดับ Low Level ขนาดนี้ตรงๆนะคับ TwT เห็นแล้วน้ำตาไหล 5555) และพอมันไม่ผ่าน Iptables ก็เลยไม่เจอปัญหาการ Lookup จาก Iptables ที่ช้านั่นเอง
+![support-matrix](images/ebpf/flow.png)
 https://projectcalico.docs.tigera.io/about/about-ebpf
 
 ซึ่งที่พูดมาถึงตอนนี้เพื่อนๆอาจจะฟังดูแล้วมันเกี่ยวกับอะรั้ยกับ Advance Cluster Security วันนี้ 5555 วันนี้จะได้เห็น Scan Log4Shell มั้ยยยย 55555 ก็ขอบอกว่าอีกแปปหนึ่งใกล้จบบทแล้ว เพียงแต่ว่าอยากลองเล่าประสบการณ์ที่เกิดจากการอ่านและทดลองทำแบบรวมๆหลายแหล่งมาให้เพื่อเป็นไอเดียพื้นฐานให้เห็นว่ามันตรวจจับได้อย่างไรกันแน่ 

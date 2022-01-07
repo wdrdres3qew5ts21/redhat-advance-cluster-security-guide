@@ -50,6 +50,8 @@ docker run quay.io/linxianer12/java-danger-log4j:0.0.1
 
 https://access.redhat.com/node/5822721
 
+### Architecture
+![support-matrix](images/intro/arch.png)
 
 ```
 roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-7q7o5f-4b4a324f027aea19c5cbc0c3275c4656-0000.hkg02.containers.appdomain.cloud:443 --image quay.io/linxianer12/java-danger-log4j:0.0.4  --token-file token

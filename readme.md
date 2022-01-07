@@ -45,7 +45,7 @@
 
 ![support-matrix](images/net/node-net.png)
 
-เข้ามาดู Pod IP `172.17.168.54` จะอยู่บน Node
+เข้ามาดู Pod IP `172.17.168.54` จะอยู่บน Node `10.244.0.28`
 ![support-matrix](images/net/real-pod.png)
 
 ค้นหา Interface `calicaadabe44f2` จะพบว่า Match ชื่อตรงกันจริงๆ

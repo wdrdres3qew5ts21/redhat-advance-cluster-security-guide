@@ -42,10 +42,13 @@
 ซึ่งเบื้องหลังก็คือการเชื่อม Virtual Ethernet Cable Interface จาก Host เสียบเข้าไปใน Pod (เหมือน Router/Switch จำลองนั่นเอง~) อ่านเพิ่มได้ที่ https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking#veth
 
 ซึ่งภาพนี้คือภาพที่ได้จากคำสั่งของ `routel` เพื่อดูสรุปการ Routing ใน Host Linux `10.244.0.28` ของเราจะพบว่าถูกส่งไปหา Virtual Ethernet Link ของ Calico นั่นเองซึ่ง IP ที่เห็นเหล่านี้ก็จะเป็น IP ของ Pod ไม่ก็ Service ต่างๆที่อยู่ใน Kubernetes หมดเลยซึ่งเพื่อนสามารถลองไป Mapping ดูได้จะได้ Link Interface IP ตรงกันเป๊ะๆ โดยให้ดูที่ Pod IP `172.17.168.54` และมี Interface เป็น `linkcalicaadabe44f2` แต่เวลาเราค้นหาผ่าน Interface ใน `ip addr` เราจะใส่แค่ `calicaadabe44f2`
+
 ![support-matrix](images/net/node-net.png)
+
 เข้ามาดู Pod IP `172.17.168.54` จะอยู่บน Node
 ![support-matrix](images/net/real-pod.png)
-ค้นหา Interface `calicaadabe44f2`
+
+ค้นหา Interface `calicaadabe44f2` จะพบว่า Match ชื่อตรงกันจริงๆ
 ![support-matrix](images/net/link.png)
 
 https://projectcalico.docs.tigera.io/about/about-ebpf

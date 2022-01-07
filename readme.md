@@ -19,14 +19,14 @@
 สำหรับอีกคำถามหนึ่งหลังจากที่เรามีการตรวจจับหรือ Block จังหวะขาเข้ากำลังจะสร้าง (Deploy-Time) Object ไปยัง Kubernetes API Server ได้แล้วผ่าน Admission Controller เรามีเทคนิคอะไรอีกในการตรวจจับสิ่งที่ทำงานไปแล้ว (Run-time) ? 
 และสำหรับการเก็บข้อมูลในจังหวะที่ Pod ของเรานั้นทำงานไปใน Cluster แล้วจะใช้เทคโนโลยีที่อยู่ใน Linux อยู่แล้วที่ชื่อว่า eBPF (Extended Berkeley Packet Filter) ซึ่งจริงๆแล้วก็เกิดมาจาก BPF (Berkeley Packet Filter) ที่ในตอนแกรเกิดมาสำหรับการเขียน Rule ในการทำ Routing ภายในตัว Linux เองโดยถ้านึกถึงเรื่องใกล้ตัวก็คือคำสั่งที่เกี่ยวข้องกับ iptables ที่ใช้ในการทำ NAT หรือการ drop Package ระหว่าง Interface ต่างๆภายใน Linux นั่นเองซึ่งตัวอย่างที่ดังๆและน่าสนใจก็อย่างเช่น Cloud Flare ที่นำ eBPF มาผสมกับ Nftables ซึ่ง Nftables เองก็กำลังจะกลายเป็นตัวกฏ Routing หลักของ Linux ในอนาคต https://wiki.nftables.org/wiki-nftables/index.php/Moving_from_iptables_to_nftables ซึ่งเพื่อนๆสามารถไปดูได้จากเว็บของ Netfilter ที่เป็นทั้งผู้พัฒนา Nftables กับ Iptables อยู่แล้ว แต่ถึงกระนั้นเองผมก็เจอบั้คกับ Docker นะตอนไปใช้ Nftables TwT คือ Service Discovery ไม่ทำงานเลยแต่เหมือนตอนนี้จะแก้ได้แล้วล่าสุดบน Fedora35 (แต่ผมยังไม่เคยเทสเหมือนกันนะว่าแก้ได้จริงมั้ยนะ เคยแต่ลองสมัยก่อนประมาณสองปีก่อน TwT ) https://fedoramagazine.org/docker-and-fedora-35/ ซึ่งสำหรับเหตุผลสั้นๆง่ายๆว่าทำไม Iptables มันช้าและต้องอัพเกรดมาเป็น Nftables นั่นก็คือ Iptables พออัพเดทครั้งหนึ่งมันจะต้องบังคับอัพเดทไปพร้อมๆกับ Rules ทั้งแผงกับเวลาที่มี Routing เข้ามาการ Search Rule นั้นเป็นแบบ Linear ทำให้ช้ามากนั่นเองอ่านเพิ่มได้ที่ https://cilium.io/blog/2018/04/17/why-is-the-kernel-community-replacing-iptables
 
-ซึ่งถ้าเป็นสมัยก่อนเราไม่มีการสร้าง Pod มากๆหรือใช้เทคนิคที่ทำงานใน Overlay Network ใน Host หนึ่งเยอะๆก็ดูจะไม่เป็นไร แต่ถ้าเราลองไปดู Routing Tables ใน Kubernetes Host ของเราจะพบว่าพวก Pod ทั้งหลายมีการแอบไปเพิ่ม Routing ไปยัง IPTables 
+ซึ่งถ้าเป็นสมัยก่อนเราไม่มีการสร้าง Pod มากๆหรือใช้เทคนิคที่ทำงานใน Overlay Network ใน Host หนึ่งเยอะๆก็ดูจะไม่เป็นไร แต่ถ้าเราลองไปดู Routing Tables ใน Kubernetes Host ของเราจะพบว่าพวก Pod ทั้งหลายมีการแอบไปเพิ่ม Routing ไปยัง IPTables เองอัตโนมัติ
 
 ![support-matrix](images/ebpf/veth.png)
 
 
-เองอัตโนมัติเพราะด้วยเทคนิค Overlay Network ที่เป็น Network เสมือนจำลองวิ่งบน Network ของ CNI ใน Kubernetes เองการเชื่อมต่อ Pod ใน Cluster เดียวกันเชื่อมต่อกันไปหากันได้หมดก็เลยตั้งมี Container Network Interface อย่าง Calico ที่จะเป็น DaemonSet ไปลงแล้วเกาะกับ Host Machine เพื่อทำคำสั่งที่ระดับ Low Level แบบนี้แล้วเพิ่ม Route เชื่อมเข้ากลับไปในแต่ล่ะ Pod นั่นเอง 
+เพราะด้วยเทคนิค Overlay Network ที่เป็น Network เสมือนจำลองวิ่งบน Network ของ CNI ใน Kubernetes เองการเชื่อมต่อ Pod ใน Cluster เดียวกันเชื่อมต่อกันไปหากันได้หมดก็เลยตั้งมี Container Network Interface อย่าง Calico ที่จะเป็น DaemonSet ไปลงแล้วเกาะกับ Host Machine เพื่อทำคำสั่งที่ระดับ Low Level แบบนี้แล้วเพิ่ม Route เชื่อมเข้ากลับไปในแต่ล่ะ Pod นั่นเอง 
 
-![support-matrix](images/ebpf/veth.png)
+
 
 ซึ่งเบื้องหลังก็คือการเชื่อม Virtual Ethernet Cable Interface จาก Host เสียบเข้าไปใน Pod (เหมือน Router/Switch จำลองนั่นเอง~) อ่านเพิ่มได้ที่ https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking#veth
 

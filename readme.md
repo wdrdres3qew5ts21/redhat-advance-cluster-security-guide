@@ -80,8 +80,11 @@ https://cloudblogs.microsoft.com/opensource/2021/05/10/making-ebpf-work-on-windo
 4. Admission Controller ใช้ในการตรวจเงื่อนไขตาม Policy ที่ถูกสั่งมาจาก Central ว่า Pod จะถูกสร้างได้สำเร็จหรือไม่
 5. Collector จะอยู่ใน Cluster ที่เราต้องการจะ Secured ทำหน้าที่เก็บข้อมูลต่างๆจาก Host โดยตรงว่าตอนนี้ Host ปัจจุบันมีการเรียก Syscall ที่เกี่ยวข้องกับ Network หรือ Process ใดบ้างเพื่อสร้างเป็นแผนภาพ Topology Network นั่นเองโดยจะใช้ eBPF Tracing ไปดึงข้อมูลมาและส่งข้อมูลกลับไปที่ Sensor
 
-
 ![support-matrix](images/intro/arch.png)
+
+
+### Install Red Hat Advanced Cluster Security
+
 
 ```
 roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-7q7o5f-4b4a324f027aea19c5cbc0c3275c4656-0000.hkg02.containers.appdomain.cloud:443 --image quay.io/linxianer12/java-danger-log4j:0.0.4  --token-file token

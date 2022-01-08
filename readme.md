@@ -84,7 +84,26 @@ https://cloudblogs.microsoft.com/opensource/2021/05/10/making-ebpf-work-on-windo
 
 
 ### Install Red Hat Advanced Cluster Security
+ในตัวอย่างการ Demo ครั้งนี้จะใช้ Openshift 4.8 ในการลงทั้ง Central ที่เป็น GUI ในการควบคุมกฏต่างๆรวมถึงให้เป็น Cluster ที่ถูก Enforced การใช้กฏด้วยเช่นกัน ซึ่งวิธีการลงก็ให้เราเปิด Operator Catalog ได้เลยที่ Tabs Administration
 
+![support-matrix](images/install/catalog.png)
+
+ซึ่งสำหรับ Central เราสามารถเลือกทุกอย่างเป็น Default ได้เลยผ่าน GUI หรือจะเลือก Apply Manifest นี้ manual ก็ได้โดยจะไปติดตั้งที่ Namespace `rhacs-operator` 
+
+```
+oc apply -f central.yaml
+
+oc apply -f  securedcluster.yaml
+```
+
+![support-matrix](images/install/installed.png)
+
+ซึ่งจริงๆแล้วเพื่อนๆก็สามารถปรับได้ตามใจชอบเลยนะไป Namespace อื่นก็ได้แต่ SecuredCluster ต้องอยู่ Namespace เดียวกับ Central นะเพราะว่าเราใช้ Default Endpoint ไมไ่ด้ Custom อะไรเพิ่มเติม แต่ถ้ากรณีมีหลายๆ Cluster ก็ให้ไปเพิ่ม Field ระบุเป็น Endpoint จริงๆของ Central ไปนั่นเอง
+
+ไม่ต้องใส่อะไรเพิ่มเติมสามารถใช้ Default ค่าได้เลยสำหรับ Central
+![support-matrix](images/install/central.png)
+ให้มั่นใจว่าติ้กเลือก Fields ในภาพให้ครบเพื่อให้ In-Line Scan ทำงานทันทีเวลามี Image ใหม่เข้ามาส่วนที่เหลือสามารถใช้ Default ได้เลยไม่ต้องกดอะไรเพิ่มเติม
+![support-matrix](images/install/securedcluster.png)
 
 ```
 roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-7q7o5f-4b4a324f027aea19c5cbc0c3275c4656-0000.hkg02.containers.appdomain.cloud:443 --image quay.io/linxianer12/java-danger-log4j:0.0.4  --token-file token
@@ -106,6 +125,8 @@ Click Download Kubernetes Secret File to download the generated bundle.
 oc run shell --labels=app=shellshock,team=test-team --image=quay.io/linxianer12/vulnerables:cve-2014-6271 
 
 oc run samba --labels=app=rce  --image=docker.io/vulnerables/cve-2017-7494 
+
+roxctl deployment check --file deplyoment.yaml --endpoint central-rhacs-operator.itzroks-666000ldq2-2vqn82-6ccd7f378ae819553d37d5f2ee142bd6-0000.jp-tok.containers.appdomain.cloud:443  --token-file token
 
 roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-2vqn82-6ccd7f378ae819553d37d5f2ee142bd6-0000.jp-tok.containers.appdomain.cloud:443 --image quay.io/linxianer12/java-danger-log4j:0.0.1  -f  --token-file token
 

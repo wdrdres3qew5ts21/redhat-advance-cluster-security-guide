@@ -1,0 +1,21 @@
+apiVersion: platform.stackrox.io/v1alpha1
+kind: SecuredCluster
+metadata:
+  name: stackrox-secured-cluster-services
+  namespace: rhacs-operator
+spec:
+  admissionControl:
+    bypass: BreakGlassAnnotation
+    contactImageScanners: ScanIfMissing
+    listenOnCreates: true
+    listenOnEvents: true
+    listenOnUpdates: true
+    timeoutSeconds: 3
+  auditLogs:
+    collection: Auto
+  clusterName: thai-cluster
+  perNode:
+    collector:
+      collection: KernelModule
+      imageFlavor: Regular
+    taintToleration: TolerateTaints

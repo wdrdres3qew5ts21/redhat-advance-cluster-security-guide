@@ -154,13 +154,118 @@ copy Password จริงๆมาใช้งานซึ่งรหัสผ
 
 ![redhat-advance-cluster-security](images/install/pitfall.png)
 
-แต่ถ้าเพื่อนๆสามารถเข้าไปหน้า Console ได้แล้วก็สบายใจได้ซึ่งระหว่างนี้ทุกคนจะยังไม่มีผลลัพธ์ของการ Scan Cluster ก็ไม่ต้องตกใจไป ~ (เพราะผมแอบลงไปก่อนแล้วนั่นเอง 55555)
+แต่ถ้าเพื่อนๆสามารถเข้าไปหน้า Console ได้แล้วก็สบายใจได้ซึ่งระหว่างนี้ทุกคนจะยังไม่มีผลลัพธ์ของการ Scan Cluster ก็ไม่ต้องตกใจไป ~ (เพราะผมแอบลงไปก่อนแล้วนั่นเอง 55555) ซึ่งให้เพื่อนทุกคนโหลด CLI Binary ลงมาก่อนด้วยเลยก็ได้ไว้เตรียมใช้ต่อไป
 
-![redhat-advance-cluster-security](images/install/pitfall.png)
+![redhat-advance-cluster-security](images/integrated/welcome.png)
 
+จากนั้นให้เราไปที่ Tab `Platform Configuration > Integrations` ซึ่ง Tab อยู่ทางด้านซ้ายล่างสุดและกด expand ออกมาดั่งภาพ
 
+![redhat-advance-cluster-security](images/integrated/integrate-cluster.png)
 
-ให้มั่นใจว่าติ้กเลือก Fields ในภาพให้ครบเพื่อให้ In-Line Scan ทำงานทันทีเวลามี Image ใหม่เข้ามาส่วนที่เหลือสามารถใช้ Default ได้เลยไม่ต้องกดอะไรเพิ่มเติม
+จากนั้นเราจะทำการตั้งชื่อ Secret Clsuter กันสักหน่อยซึ่งก็ให้เป็นชื่อ Cluster ที่เพื่อนๆใช้กันก็ได้นะเพื่อความจำง่ายโดยกดที่ปุ่ม `Generate Bundle` ปุ่มน้ำเงินๆเข้ม
+
+![redhat-advance-cluster-security](images/integrated/generate.png)
+
+เข้าไปกรอกรายละเอียด Cluster ต่างๆและ Generate มาเป็น Secret File ธรรมดาๆสำหรับการทดลองใช้ง่ายๆครั้งนี้ และเราจะได้ไฟล์ Secret มาก็ให้เรานำไป Apply ใช้
+![redhat-advance-cluster-security](images/integrated/download.png)
+
+แต่สิ่งสำคัญหนึ่งก็คือ File Secret นี้ต้องอยู่ใน Namespace เดียวกับ SecuredCluster ด้วยนั่นเอง (เพราะไม่อย่างนั้นจะเจอปัญหา SecuredCluster หา Secret ต่อไป Central ไมไ่ด้เหมือนภาพปัญหาตอนที่ลืม Generate Secret ในตอนแรกก่อนนั่นเอง)
+ดั่งนั้นเพื่อเช็คกันพลาดสักหน่อยก็ลองตรวจดู Namespace ดูด้วยนะ
+
+ตัวอย่างหน้าตาไฟล์ secret ชื่อ `clsuter-init-secrets.yaml`
+```yaml
+# This is a StackRox cluster init bundle.
+# This bundle can be used for setting up any number of StackRox secured clusters.
+# NOTE: This file contains secret data and needs to be handled and stored accordingly.
+#
+#   name:      "accounting-erp-cluster"
+#   createdAt: 2022-01-08T06:12:55.742039919Z
+#   expiresAt: 2023-01-08T06:13:00Z
+#   id:        96cc46a6-e943-4a40-961c-f7c39fa26b64
+#
+
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    init-bundle.stackrox.io/created-at: "2022-01-08T06:12:55.742039919Z"
+    init-bundle.stackrox.io/expires-at: "2023-01-08T06:13:00Z"
+    init-bundle.stackrox.io/id: 96cc46a6-e943-4a40-961c-f7c39fa26b64
+    init-bundle.stackrox.io/name: accounting-erp-cluster
+  creationTimestamp: null
+  name: collector-tls
+stringData:
+  ca.pem: |
+    -----BEGIN CERTIFICATE-----
+    mockkkkkkkkkkk
+    -----END CERTIFICATE-----
+  collector-cert.pem: |
+    -----BEGIN CERTIFICATE-----
+    mockkkkkkkkkkk
+    -----END CERTIFICATE-----
+  collector-key.pem: |
+    -----BEGIN EC PRIVATE KEY-----
+    mockkkkkkkkkkk
+    -----END EC PRIVATE KEY-----
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    init-bundle.stackrox.io/created-at: "2022-01-08T06:12:55.742039919Z"
+    init-bundle.stackrox.io/expires-at: "2023-01-08T06:13:00Z"
+    init-bundle.stackrox.io/id: 96cc46a6-e943-4a40-961c-f7c39fa26b64
+    init-bundle.stackrox.io/name: accounting-erp-cluster
+  creationTimestamp: null
+  name: sensor-tls
+stringData:
+  ca.pem: |
+    -----BEGIN CERTIFICATE-----
+    mockkkkkkkkkkk
+    -----END CERTIFICATE-----
+  sensor-cert.pem: |
+    -----BEGIN CERTIFICATE-----
+    mockkkkkkkkkkk
+    -----END CERTIFICATE-----
+  sensor-key.pem: |
+    -----BEGIN EC PRIVATE KEY-----
+    mockkkkkkkkkkk
+    -----END EC PRIVATE KEY-----
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    init-bundle.stackrox.io/created-at: "2022-01-08T06:12:55.742039919Z"
+    init-bundle.stackrox.io/expires-at: "2023-01-08T06:13:00Z"
+    init-bundle.stackrox.io/id: 96cc46a6-e943-4a40-961c-f7c39fa26b64
+    init-bundle.stackrox.io/name: accounting-erp-cluster
+  creationTimestamp: null
+  name: admission-control-tls
+stringData:
+  admission-control-cert.pem: |
+    -----BEGIN CERTIFICATE-----
+    mockkkkkkkkkkk
+    -----END CERTIFICATE-----
+  admission-control-key.pem: |
+    -----BEGIN EC PRIVATE KEY-----
+    mockkkkkkkkkkk
+    -----END EC PRIVATE KEY-----
+  ca.pem: |
+    -----BEGIN CERTIFICATE-----
+    mockkkkkkkkkkk
+    -----END CERTIFICATE-----
+```
+ใช้คำสั่งและ apply ไฟล์ที่เราเป้นคน generate มาเอง
+
+```
+oc project
+
+oc apply -f <ชื่อไฟล์ secret ที่ generate ออกมา>
+```
+ถ้าเรามี  Secret ครบทั้งสามตัวคือ `sensor-tls` `collector-tls` `admission-control-tls` พร้อมแล้วทีนี้ Component SecuredCluster ก็จะพร้อมใช้งานแล้วนั่นเอง ~
+
+ให้เรากลับไปที่ Console Openshift อีกครั้งและเตรียมไปสร้าง Kind `SecuredCluster` โดย ให้มั่นใจว่าติ้กเลือก Fields ในภาพให้ครบเพื่อให้ In-Line Scan ทำงานทันทีเวลามี Image ใหม่เข้ามาส่วนที่เหลือสามารถใช้ Default ได้เลยไม่ต้องกดอะไรเพิ่มเติม
 ![redhat-advance-cluster-security](images/install/securedcluster.png)
 
 

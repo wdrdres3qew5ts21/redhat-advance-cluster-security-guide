@@ -325,15 +325,100 @@ spec:
 ![redhat-advance-cluster-security](images/compliance/detail.png)
 
 #### ตรวจดู Network Segmentation และการสร้าง Policy Network
-และด้วยความสามารถและเทคนิคที่เราพูดเกี่ยวถึง eBPF เบื้องต้นไปก็ย่อมแน่นอนว่า Advanced Cluster Security มาพร้อมพร้อมกับ Feature ที่ทำหน้าที่การ Tracing Connection ที่เกิดขึ้นได้อีกด้วยโโยภาพนี้จะเป็นการแสดงเส้น Traffic ตามจริงแบบ Realtime ที่เกิดขึ้นใน Cluster ที่เราดูแลอยู่ซึ่งเห็นทั้ง Port และ Namespace ที่จากมา
+และด้วยความสามารถและเทคนิคที่เราพูดเกี่ยวถึง eBPF เบื้องต้นไปก็ย่อมแน่นอนว่า Advanced Cluster Security มาพร้อมพร้อมกับ Feature ที่ทำหน้าที่การ Tracing Connection ที่เกิดขึ้นได้อีกด้วยโดยภาพนี้จะเป็นการแสดงเส้น Traffic ตามจริงแบบ Realtime ที่เกิดขึ้นใน Cluster ที่เราดูแลอยู่ซึ่งเห็นทั้ง Port และ Namespace ที่จากมา
 
 ![redhat-advance-cluster-security](images/network/topology-welcome.png)
+
+โดยเราจะลองทดสอบสร้าง application ที่ Namespace ใหม่คือ `on-premise` โดย Application `quay.io/linxianer12/im-in-frontend:0.0.3` นั้นจะทำงานอยู่ที่ Port 8080 และ Application `quay.io/linxianer12/medical-contoso-frontend:1.0.0` จะทำงานอยู่ที่ Port 3000 จากนั้นเราจะสลับไป namespace `business-partner-network` แล้วเชื่อมต่อไปยัง Application ที่ทำงานอยู่ใน Namespace `on-premise` และไปดู Topology กันใน Advanced Clsuter Security
+```
+oc new-project on-premise
+oc create deployment im-in-frontend --image quay.io/linxianer12/im-in-frontend:0.0.3 
+oc expose deployment im-in-frontend --port=8080 --target-port=8080
+oc get svc
+
+oc create deployment medical-frontend --image quay.io/linxianer12/medical-contoso-frontend:1.0.0
+oc expose deployment medical-frontend --port=3000 --target-port=3000
+oc get svc
+
+```
+ตัวอย่างผลลัพธ์
+```
+supakorn.t@cloudnative:~/ProjectCode/redhat-advance-cluster-security-guide > oc create deployment medical-frontend --image quay.io/linxianer12/medical-contoso-frontend:1.0.0
+oc expose deployment medical-frontend --port=3000 --target-port=3000
+oc get svc
+curl medical-frontend.on-premise.svc:3000
+deployment.apps/medical-frontend created
+service/medical-frontend exposed
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+im-in-frontend     ClusterIP   172.21.254.65   <none>        8080/TCP   5m45s
+medical-frontend   ClusterIP   172.21.232.31   <none>        3000/TCP   0s
+```
+ซึ่งเราควรจะเห็น Service `im-in-frontend` นั้นถูก Expose อยู่ที่ port 8080 และมี `medical-frontend` อยู่ที่ Port 3000 ตามลำดับ
+ซึ่งหลังจากนี้เราจะลองทดลองสลับไป Namespace อื่นแล้วเรียกไปหา Application ที่ทำงานใน `om-premise` namespace โดยเราจะสลับไป Namespace ชื่อว่า `business-partner-network`
+
+```
+oc new-project business-partner-network
+oc create deployment partner-portal --image quay.io/linxianer12/im-in-frontend:0.0.3 
+```
+
+ซึ่งตอนนี้ทุกคนควรจะได้ภาพคล้ายๆประมาณนี้คือมี Namespace `on-premise` และ `business-partner-network` เกิดขึ้นมาใน Topology แต่ตอนนี้ทั้งสองตัวจะยังไม่มีเส้นเชื่อมต่อกันดั่งภาพ
+
+![redhat-advance-cluster-security](images/network/before-curl.png)
+
+และถ้าเราลองกดเข้าไปคลิกที่ชื่อของ Application ในจุดสีฟ้าๆจะเห็นรายละเอียดของ Port ที่ Application นั้นกำลัง Binding อยู่ด้วยนั่นเอง
+
+![redhat-advance-cluster-security](images/network/bind-detail.png)
+
+จากนั้นเราจะลองเข้าไปใน Pod ที่สร้างใน Namespace `business-partner-network` ที่เป็น Pod `partner-portal` (ทำได้ทั้งผ่าน gui หรือ commandline exec เข้าไปใน pod) และใช้คำสั่ง
+
+```
+curl im-in-frontend.on-premise.svc:8080
+curl medical-frontend.on-premise.svc:3000
+```
+![redhat-advance-cluster-security](images/network/connect-onprem.png)
+
+จากนั้นเราจะลองกลับไปดูที่ Network Topology กัน (ลอง Refresh หน้า Console ของ Central Advance Cluster Security สักครั้งหนึ่ง) จะเห็นมีเส้นการเชื่อมต่อเกิดขึ้นระหว่าง Namespace `business-partner-network` และ`on-premise` มีเส้นลากระหว่างกันและมีเลข 2 อยู่ระหว่างเส้นซึ่งมีถึงมี 2 Flow Traffic สองแบบที่เกิดขึ้นแล้ว
+
+![redhat-advance-cluster-security](images/network/part-prem.png)
+
+จากนั้นถ้าเราลองกดคลิกเฉพาะที่กล่อง Namespace ของ `business-partner-network` ตัว GUI ก็จะแสดงเฉพาะ Network นั้นซึ่งจะทำให้แสดงผลลัพธ์ของของการเชื่อมต่อในเส้นเพิ่มเติมดั่งภาพ ซึ่งก็จะเป็น Port ที่เรา curl ไปจริงๆคือ 3000 และ 8080 ตามลำดับของทั้งสอง Application ที่อยู่ใน namespace `on-premise`
+กดครั้งแรกแล้วให้กดไปต่อเพิ่มคือที่มุมขวาคำว่า Navigate to Deployment Detail
+
+![redhat-advance-cluster-security](images/network/navigate.png)
+และเราจะเห็นภาพ Traffic ที่เกิดขึ้นจาก Namespace `on-premise` และสามารถแปะป้ายให้ Traffic เหล่านั้นอยู่ในหัวข้อ Anomalies ที่หมายถึงเป็น Traffic ที่ผิดปกติได้อีกด้วย
+![redhat-advance-cluster-security](images/network/flow-detail.png)
+
+ซึ่งถ้าเราลองเลือก Flow Traffic ให้ Application `medical-frontend` ทำงานที่ port 3000 และอยู่ใน Namespace `on-premise` เป็น Flow Traffic มีความผิดปกติเป็น Anomalous ก็ให้เราทำการกด Adding เพิ่มเข้าไปได้เลย https://docs.openshift.com/acs/3.66/operating/manage-network-policies.html
+
+![redhat-advance-cluster-security](images/network/add-anomaly.png)
+
+หลังจากที่แปะป้ายว่า Flow Traffic แบบนี้มีความผิดปกติแล้วให้เราสลับไปที่ Tab ชื่อว่า BaseLine ด้านขวาของ Network Flow และกดเปิด `ALERT ON BASELINE VIOLATIONS` ให้ Toggle กลายเป้นสีเขียวจะแปลว่ากำลังเปิดใช้งาน (ถ้าเพื่อนๆสังเกตดูก็จะมี CIDR Block แบบ Network ได้ด้วยนะเช่นอยาก Block 8.8.8.8 หรือวง Network ที่ไม่อยากให้ไปก็ทำได้) หลังจากนั้นเราจะกลับไปที่ Terminal ของเราที่กำลัง exec อยู่ใน pod ของ namespace `business-partner-network` กันเพื่อทดสอบอีกครั้งหนึ่ง
+
+![redhat-advance-cluster-security](images/network/enable-alert-anomaly.png)
+
+ด้วยการใช้คำสั่งเดิมแต่ครั้งนี้เรียกให้ไปหา Application `medical-frontend` ที่อยู่ใน Namespace `on-premise` ก็พอซึ่งเป็น App ที่โดนเราแปะป้ายว่าเป็น Flow Traffic ที่ผิดปกติไปแล้ว
+
+```
+curl medical-frontend.on-premise.svc:3000
+```
+![redhat-advance-cluster-security](images/network/violence-call.png)
+
+จากนั้นเราจะกลับไปที่ Console ของ Central ใหม่และไปดูกันโดยให้เรากลับเข้าไปที่ Tabs Violation ซึ่งหมายถึงการสรุปเหตุการณ์ที่ละเมิดกฏต่างๆที่เราตั้งไว้ทั้งหมดนั่นเอง เราจะพบว่ามีเหตุการณ์ที่ชื่อ `Unauthorized Network Flow` เกิดขึ้น (ลอง Sorting เวลาได้นะจะได้เห็นเหตุการณ์ล่าสุดอยู๋ข้างบนสุด)
+![redhat-advance-cluster-security](images/network/ls-violate.png)
+
+และถ้าเราเข้าไปดูเพิ่มเติมที่ Policy ที่ถูกละเมิดซึ่งก็ตรงกับที่เราแปะ Mark Traffic เอาไว้เลยนั่นเอง
+![redhat-advance-cluster-security](images/network/violate-detail.png)
+
+
+
+
 
 
 
 ```
 roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-7q7o5f-4b4a324f027aea19c5cbc0c3275c4656-0000.hkg02.containers.appdomain.cloud:443 --image quay.io/linxianer12/java-danger-log4j:0.0.4  --token-file token
 ```
+
 
 
 https://docs.openshift.com/acs/3.66/installing/install-ocp-operator.html

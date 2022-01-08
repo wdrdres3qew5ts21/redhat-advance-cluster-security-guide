@@ -303,9 +303,20 @@ spec:
 
 ![redhat-advance-cluster-security](images/integrated/final.png)
 
-ให้เรากลับไปที่ Console ของ Advanced Cluster Security 
+ให้เรากลับไปที่ Console ของ Advanced Cluster Security จะเห็น Cluster ที่เพิ่มเข้าไปสำเร็จเพิ่มขึ้นมาซึ่งชื่อ Cluster ก็จะเป็นชื่อของ Manifest ที่เราสร้างนั่นเองซึ่งการ Config ถ้าอยากจะแก้ไขต้องไปแก้ไขผ่าน Manifest ของ Kind `SecuredCluster` 
 
 ![redhat-advance-cluster-security](images/integrated/connected.png)
+
+ภาพของ SecuredCluster ที่แจ้งเตือนว่าถูกสร้างจาก Custom Resource Definition ของ Operator
+
+![redhat-advance-cluster-security](images/integrated/securedclsuter-detail.png)
+
+ถึงตอนนี้ก็เรียกว่าครบภาพรวมการติดตั้ง Advanced Cluster Security แบบง่ายๆไปเรียบร้อยแล้วนั่นเองโดยให้เพื่อนๆกลับไปที่ tab Compliance แล้วลองกด Scan Environment สักรอบหนึ่งถ้าถูกต้องจะต้องสามารถ Scan และได้ Report ออกมาเหมือนกับภาพนี้
+
+![redhat-advance-cluster-security](images/integrated/compliance.png)
+
+
+
 
 
 ```

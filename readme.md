@@ -90,10 +90,67 @@ https://cloudblogs.microsoft.com/opensource/2021/05/10/making-ebpf-work-on-windo
 
 ซึ่งสำหรับ Central เราสามารถเลือกทุกอย่างเป็น Default ได้เลยผ่าน GUI หรือจะเลือก Apply Manifest นี้ manual ก็ได้โดยจะไปติดตั้งที่ Namespace `rhacs-operator` 
 
+central.yaml
+```yaml
+apiVersion: platform.stackrox.io/v1alpha1
+kind: Central
+metadata:
+  name: stackrox-central-services
+  namespace: rhacs-operator
+spec:
+  central:
+    exposure:
+      loadBalancer:
+        enabled: false
+        port: 443
+      nodePort:
+        enabled: false
+      route:
+        enabled: true
+    persistence:
+      persistentVolumeClaim:
+        claimName: stackrox-db
+  egress:
+    connectivityPolicy: Online
+  scanner:
+    analyzer:
+      scaling:
+        autoScaling: Enabled
+        maxReplicas: 5
+        minReplicas: 2
+        replicas: 3
+    scannerComponent: Enabled
+```
+
+securedcluster.yaml
+```yaml
+apiVersion: platform.stackrox.io/v1alpha1
+kind: SecuredCluster
+metadata:
+  name: stackrox-secured-cluster-services
+  namespace: rhacs-operator
+spec:
+  admissionControl:
+    bypass: BreakGlassAnnotation
+    contactImageScanners: ScanIfMissing
+    listenOnCreates: true
+    listenOnEvents: true
+    listenOnUpdates: true
+    timeoutSeconds: 3
+  auditLogs:
+    collection: Auto
+  clusterName: thai-cluster
+  perNode:
+    collector:
+      collection: KernelModule
+      imageFlavor: Regular
+    taintToleration: TolerateTaints
+```
+
 ```
 oc apply -f central.yaml
 
-oc apply -f  securedcluster.yaml
+oc apply -f securedcluster.yaml
 ```
 
 ![support-matrix](images/install/installed.png)

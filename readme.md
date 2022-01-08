@@ -90,6 +90,7 @@ https://cloudblogs.microsoft.com/opensource/2021/05/10/making-ebpf-work-on-windo
 
 ซึ่งสำหรับ Central เราสามารถเลือกทุกอย่างเป็น Default ได้เลยผ่าน GUI หรือจะเลือก Apply Manifest นี้ manual ก็ได้โดยจะไปติดตั้งที่ Namespace `rhacs-operator` 
 
+#### Install: Central
 central.yaml
 ```yaml
 apiVersion: platform.stackrox.io/v1alpha1
@@ -265,11 +266,13 @@ oc apply -f <ชื่อไฟล์ secret ที่ generate ออกมา>
 ```
 ถ้าเรามี  Secret ครบทั้งสามตัวคือ `sensor-tls` `collector-tls` `admission-control-tls` พร้อมแล้วทีนี้ Component SecuredCluster ก็จะพร้อมใช้งานแล้วนั่นเอง ~
 
+
+#### Install: SecuredCluster
 ให้เรากลับไปที่ Console Openshift อีกครั้งและเตรียมไปสร้าง Kind `SecuredCluster` โดย ให้มั่นใจว่าติ้กเลือก Fields ในภาพให้ครบเพื่อให้ In-Line Scan ทำงานทันทีเวลามี Image ใหม่เข้ามาส่วนที่เหลือสามารถใช้ Default ได้เลยไม่ต้องกดอะไรเพิ่มเติม
 ![redhat-advance-cluster-security](images/install/securedcluster.png)
 
-
-
+โดยตัวอย่างไฟล์แบบที่ต้องการและใช้เป็น Default มีการตั้งค่าตาม GUI จะได้เป็นดั่งนี้ซึ่งก็สามารถสร้างตามนี้ดว้ยการ apply manifest
+`oc apply -f securedcluster.yaml` เช่นกัน
 
 securedcluster.yaml
 ```yaml
@@ -296,10 +299,20 @@ spec:
     taintToleration: TolerateTaints
 ```
 
+ถ้าหากลงได้สมบูรณ์แล้วจะได้ภาพดั่งนี้คือมี `Central` และ `SecuredCluster` ที่ Deploy เรียบร้อยแล้ว
+
+![redhat-advance-cluster-security](images/integrated/final.png)
+
+ให้เรากลับไปที่ Console ของ Advanced Cluster Security 
+
+![redhat-advance-cluster-security](images/integrated/connected.png)
+
 
 ```
 roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-7q7o5f-4b4a324f027aea19c5cbc0c3275c4656-0000.hkg02.containers.appdomain.cloud:443 --image quay.io/linxianer12/java-danger-log4j:0.0.4  --token-file token
 ```
+
+
 https://docs.openshift.com/acs/3.66/installing/install-ocp-operator.html
 
 On the RHACS portal, navigate to Platform Configuration → Integrations.

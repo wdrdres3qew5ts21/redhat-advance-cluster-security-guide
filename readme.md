@@ -324,6 +324,13 @@ spec:
 
 ![redhat-advance-cluster-security](images/compliance/detail.png)
 
+#### ตรวจดู Network Segmentation และการสร้าง Policy Network
+และด้วยความสามารถและเทคนิคที่เราพูดเกี่ยวถึง eBPF เบื้องต้นไปก็ย่อมแน่นอนว่า Advanced Cluster Security มาพร้อมพร้อมกับ Feature ที่ทำหน้าที่การ Tracing Connection ที่เกิดขึ้นได้อีกด้วยโโยภาพนี้จะเป็นการแสดงเส้น Traffic ตามจริงแบบ Realtime ที่เกิดขึ้นใน Cluster ที่เราดูแลอยู่ซึ่งเห็นทั้ง Port และ Namespace ที่จากมา
+
+![redhat-advance-cluster-security](images/network/topology-welcome.png)
+
+
+
 ```
 roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-7q7o5f-4b4a324f027aea19c5cbc0c3275c4656-0000.hkg02.containers.appdomain.cloud:443 --image quay.io/linxianer12/java-danger-log4j:0.0.4  --token-file token
 ```

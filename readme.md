@@ -311,13 +311,18 @@ spec:
 
 ![redhat-advance-cluster-security](images/integrated/securedclsuter-detail.png)
 
-ถึงตอนนี้ก็เรียกว่าครบภาพรวมการติดตั้ง Advanced Cluster Security แบบง่ายๆไปเรียบร้อยแล้วนั่นเองโดยให้เพื่อนๆกลับไปที่ tab Compliance แล้วลองกด Scan Environment สักรอบหนึ่งถ้าถูกต้องจะต้องสามารถ Scan และได้ Report ออกมาเหมือนกับภาพนี้
+
+
+#### ตรวจดู Compliance ที่ครอบคลุมทั้ง Healthcare และ Finance 
+ถึงตอนนี้ก็เรียกว่าครบภาพรวมการติดตั้ง Advanced Cluster Security แบบง่ายๆไปเรียบร้อยแล้วนั่นเองโดยให้เพื่อนๆกลับไปที่ tab Compliance แล้วลองกด Scan Environment สักรอบหนึ่งถ้าถูกต้องจะต้องสามารถ Scan และได้ Report ออกมาเหมือนกับภาพนี้ ซึ่ง Compliance ก็ได้ตั้งแต่ CIS Benchmarks, NIST, PCI และ HIPAA
 
 ![redhat-advance-cluster-security](images/integrated/compliance.png)
 
+![redhat-advance-cluster-security](images/compliance/hipaa.png)
 
+![redhat-advance-cluster-security](images/compliance/pci.png)
 
-
+![redhat-advance-cluster-security](images/compliance/detail.png)
 
 ```
 roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-7q7o5f-4b4a324f027aea19c5cbc0c3275c4656-0000.hkg02.containers.appdomain.cloud:443 --image quay.io/linxianer12/java-danger-log4j:0.0.4  --token-file token

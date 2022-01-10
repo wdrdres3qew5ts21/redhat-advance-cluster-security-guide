@@ -11,7 +11,7 @@
 ![redhat-advance-cluster-security](images/intro/support-matrix.png)
 
 ### Advance Cluster Security ทำงานได้อย่างไรและใช้เทคนิคอะไรเบื้องหลังกันนะ ?
-สำหรับตัวอย่างที่เราจะมาทดลองกันในวันนี้จะประกอบไปด้วยของตรวจจับ CVE ช่องโหว่ของ Log4Shell โดยตรงและตรวจจับ Pod ที่มีพฤติกรรมการทำงานแล้วขัดกับกฏที่เราตั้งเอาไว้ใน Cluster อย่างเช่นห้ามมี User ใช้คำสั่งเข้าไปใน Pod โดยตรงเพื่อความปลอดภัยเพราะบาง Pod ก็อาจจะมี ServiceAccount ที่มี Credentials สามารถต่อตรงไปหา Kube API Server ได้อย่างเช่น Pod ที่ใช้ใน Pipeline CI/CD แล้วเราสั่งให้ Pod นั้นสามารถใช้คำสั่ง kubectl หรือเชื่อมไปหา Kube API Server แล้วเกิดเราไม่ได้จำกัดสิทธิจะกลายเป็นว่า Pod ใน Pipeline CI/CD จะกลายเป็นจุดที่น่ากลัวมากเพราะ Pod CI/CD ของเราอาจจะไปลบหรือแอบไป Deploy อะไรก็ได้จาก User หรือใครที่เข้ามาถึง Pod นี้ได้ ดังนั้นเพื่อความปลอดภัยเราก็อาจจะห้ามมีการ exec เข้าไปใน Pod โดยตรงเลยนั่นเอง ซึ่งมาตรงถึงจุดนี้เพื่อนๆก็อาจจะสงสัยบ้างวา เอ๊แล้วมันรู้ได้ยังไงกันนะว่ามันมีอะไรเกิดขึ้นใน Cluster ของเราแล้วมันไปตรงกับกฏได้ยังไงกันนะ ? ซึ่งในปกติแล้ว Kubernetes ก็จะมี Audit Logs ให้เราสามารถเข้าไปดูเหตุการณ์ที่เกิดขึ้นใน Cluster ได้เช่นกัน https://kubernetes.io/docs/tasks/debug-application-cluster/audit และก็จะมี Admission Controller https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/ ซึ่งเป็นเสมือน Filter ตัวหนึ่งที่มาขั้นในช่วงกลางระหว่างที่ Request ของเราก่อนที่จะถูกส่งไปถึง Kubernetes API Server ก็คือ Admission Controller
+สำหรับตัวอย่างที่เราจะมาทดลองกันในวันนี้จะประกอบไปด้วยของตรวจจับ CVE ช่องโหว่ของ Log4Shell โดยตรงและตรวจจับ Pod ที่มีพฤติกรรมการทำงานแล้วขัดกับกฏที่เราตั้งเอาไว้ใน Cluster อย่างเช่นห้ามมี User ใช้คำสั่งเข้าไปใน Pod โดยตรงเพื่อความปลอดภัยเพราะบาง Pod ก็อาจจะมี ServiceAccount ที่มี Credentials สามารถต่อตรงไปหา Kube API Server ได้อย่างเช่น Pod ที่ใช้ใน Pipeline CI/CD แล้วเราสั่งให้ Pod นั้นสามารถใช้คำสั่ง kubectl หรือเชื่อมไปหา Kube API Server แล้วเกิดเราไม่ได้จำกัดสิทธิจะกลายเป็นว่า Pod ใน Pipeline CI/CD จะกลายเป็นจุดที่น่ากลัวมากเพราะ Pod CI/CD ของเราอาจจะไปลบหรือแอบไป Deploy อะไรก็ได้จาก User หรือใครที่เข้ามาถึง Pod นี้ได้ ดังนั้นเพื่อความปลอดภัยเราก็อาจจะห้ามมีการ exec เข้าไปใน Pod โดยตรงเลยนั่นเอง ซึ่งมาตรงถึงจุดนี้เพื่อนๆก็อาจจะสงสัยบ้างว่า เอ๊แล้วมันรู้ได้ยังไงกันนะว่ามันมีอะไรเกิดขึ้นใน Cluster ของเราแล้วมันไปตรงกับกฏได้ยังไงกันนะ ? ซึ่งในปกติแล้ว Kubernetes ก็จะมี Audit Logs ให้เราสามารถเข้าไปดูเหตุการณ์ที่เกิดขึ้นใน Cluster ได้เช่นกัน https://kubernetes.io/docs/tasks/debug-application-cluster/audit และก็จะมี Admission Controller https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/ ซึ่งเป็นเสมือน Filter ตัวหนึ่งที่มาขั้นในช่วงกลางระหว่างที่ Request ของเราก่อนที่จะถูกส่งไปถึง Kubernetes API Server ก็คือ Admission Controller
 
 ![redhat-advance-cluster-security](images/intro/admission.png)
 
@@ -490,7 +490,7 @@ Logs ที่เกิดขึ้นครั้งนี้จะมีกา
 
 ![redhat-advance-cluster-security](images/scan/ls-image.png)
 
-โดยต่อไปเราจะทดลองกับ Application ที่มี Vulnerability เริ่มตั้งแต่ High แต่ว่าใน Image นั้นมี Image Fix ออกมาแล้วให้แก้ไขก็จะทำการ Block Image นั้นให้กลับไปที่ Tabs Platform Configuration > System Policies และค้นหา Policies `FIXABLE SEVERITY AT LEAST IMPORTANT
+โดยต่อไปเราจะทดลองกับ Application ที่มี Vulnerability เริ่มตั้งแต่ High แต่ว่าใน Image นั้นมี Image Fix ออกมาแล้วให้แก้ไขก็จะทำการ Block Image นั้นให้กลับไปที่ Tabs Platform Configuration > System Policies และค้นหา Policies `FIXABLE SEVERITY AT LEAST IMPORTANT`
 
 โดยให้เราทำเหมือนเดิมคือต้องเปิด Policies ตอน Deployment จากการให้เราเข้าไปกด Edit
 ![redhat-advance-cluster-security](images/scan/fixable.png)
@@ -513,5 +513,38 @@ oc create deployment im-in-frontend --image quay.io/linxianer12/im-in-frontend:0
 ถ้าลองมาดู Image `quay.io/linxianer12/im-in-frontend:0.0.3` ก็จะพบว่ามี Fixable ใน Version ใหม่แล้วเราเลย Deploy Image ไม่ได้นั่นเอง
 
 ![redhat-advance-cluster-security](images/scan/fix-image.png)
+
+#### ทดลอง Block การ exec เข้าไปใน Pod
+สำหรับตัวอย่งาสุดท้ายคือตัวอย่างที่เกริ่นมาข้างต้นเกี่ยวกับว่าเราลองตั้ง Policy อย่างเช่นห้ามมี User ใช้คำสั่งเข้าไปใน Pod โดยตรงเพื่อความปลอดภัยเพราะบาง Pod ก็อาจจะมี ServiceAccount ที่มี Credentials สามารถต่อตรงไปหา Kube API Server ได้อย่างเช่น Pod ที่ใช้ใน Pipeline CI/CD แล้วเราสั่งให้ Pod นั้นสามารถใช้คำสั่ง kubectl หรือเชื่อมไปหา Kube API Server แล้วเกิดเราไม่ได้จำกัดสิทธิจะกลายเป็นว่า Pod ใน Pipeline CI/CD จะกลายเป็นจุดที่น่ากลัวมากเพราะ Pod CI/CD ของเราอาจจะไปลบหรือแอบไป Deploy อะไรก็ได้จาก User หรือใครที่เข้ามาถึง Pod นี้ได้ ดังนั้นเพื่อความปลอดภัยเราก็อาจจะห้ามมีการ exec เข้าไปใน Pod โดยตรงเลยนั่นเอง
+
+ให้ทดลองด้วยการใช้คำสั่งในขณะที่เราอยู่ที่ namespace `business-partner-network` และจะสร้าง Image ที่ช่องโหว่ Security ในระดับไม่เกิน medium ขึ้นมา จึงไม่เจอกับปัญหาว่าโดน Policy `FIXABLE SEVERITY AT LEAST IMPORTANT` นั่นเอง
+
+```
+oc create deployment  medium-security --image quay.io/linxianer12/securenginx:0.0.1
+```
+
+ภาพของ Container Image `quay.io/linxianer12/securenginx:0.0.1`
+![redhat-advance-cluster-security](images/scan/securenginx.png)
+
+จากนั้นเราจะลองเข้าไปใน pod `medium-security` (เข้าผ่าน terminal ก็ได้นะ oc exec -it pod-name bash)
+
+![redhat-advance-cluster-security](images/exec/topod.png)
+
+ลองไปดูว่าเกิด Violation อะไรขึ้นไหมใน Cluster ก็จะพบว่ามีการละเมิดกฏว่ามีคนเข้าไปใน Pod แต่ก็ยังไมไ่ด้ Enforced เหมือนเดิมดังนั้นเราจึงต้องไปเปิด Enforcement เหมือนเดิม
+
+![redhat-advance-cluster-security](images/exec/ls-exec.png)
+
+เข้าไปเปิด Enforcement ที่ Tab เดิมโดยค้นหา Policy `Kubernetes Actions: Exec into Pod` และ Enable จังหวะ Runtime ให้ Toggle เป็น On True ให้เราเซฟ Policy
+
+![redhat-advance-cluster-security](images/exec/exec-true.png)
+
+กลับไปเข้า exec ใน pod ใหม่แล้วจะพบว่าเราไม่สามารถเข้าได้แล้ว
+
+![redhat-advance-cluster-security](images/exec/reject-exec.png)
+
+ผลลัพธ์ของ Violation ก็จะเปลี่ยนเป็น Enforcement ว่าเข้าไมไ่ด้แล้วนั่นเอง
+
+![redhat-advance-cluster-security](images/exec/ls-block.png)
+
 
 เพียงเท่านี้เพื่อนๆก็จะได้การ Protected Cluster Openshift อย่างง่ายๆได้แล้ว ซึ่งถ้าเพื่อนๆพี่ๆมีข้อสงสัยอะไรก็สามารถแปะคำถามมาได้เลยนะคับผม ~

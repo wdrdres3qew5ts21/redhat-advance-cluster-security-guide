@@ -423,8 +423,14 @@ curl medical-frontend.on-premise.svc:3000
 ลองเข้าไปดู `NetworkPolicy` ใน namespace `on-premise` ก็จะพบรายการของ `NetworkPolicy` 
 ![redhat-advance-cluster-security](images/np/result.png)
 
-รายละเอียดของ Network
+ภาพ yaml ที่ถูก generate ขึ้นมาเพื่อ Block Traffic
+![redhat-advance-cluster-security](images/np/yaml.png)
+
+รายละเอียดของ Network Policy ที่ถูกสร้างและ Selector ครอบคลุม Application นั้นๆก็จะถูกนำมาแสดงใน Topology ด้วยเช่นกัน
 ![redhat-advance-cluster-security](images/np/detail.png)
+
+ทดลองใช้คำสั่งเรียกไปยัง `on-premise` จาก Application partner-portal ที่อยู่ใน `business-partner-network`
+![redhat-advance-cluster-security](images/np/block.png)
 
 แต่ความน่าสนใจก็คือจากที่เราเห็นแล้วว่าเอ๊ะมันแจ้งเตือน Traffic ใ้แต่เหมือนมันจะไมไ่ด้ Block Traffic ให้ในทันทีเป็นเพราะอะไรกันนะ ? ถ้าเรายังจำตรงหน้าแสดงรายการทั้งหมดของ Violation ได้เราจะเห็นว่าตรง Column enforced นั้นถูกต้องค่าไว้เป็น no ทำให้การบังคับไม่เกิดขึ้นนั่นเองเพียงแต่มีการ Logs เก็บข้อมูลเอาไว้ดังนั้นแล้วสำหรับหัวข้อต่อไปที่เกือบจะใกล้ถึงการตรวจจับ Log4Shell ของเราก็ใกล้มาถึงแล้วจริงๆ (น้ำตาไหลมากกก 5555) แต่ตอนนี้เพื่อนๆน่าจะเห็นว่าด้วยเทคนิคของ eBPF ทำให้การตรวจจับ Traffic ระดับ Low Level นั้นเกิดขึ้นได้จริงในสภาพแวดล้อมของ Linux ปัจจุบันนั่นเอง
 

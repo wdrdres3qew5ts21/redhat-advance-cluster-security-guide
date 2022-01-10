@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: java-danger
+  name: java-danger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-danger
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: java-danger
+    spec:
+      containers:
+      - image: quay.io/linxianer12/java-danger-log4j:0.0.1
+        name: java-danger-log4j
+        resources: {}
+status: {}

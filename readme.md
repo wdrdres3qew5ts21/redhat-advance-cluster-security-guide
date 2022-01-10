@@ -416,8 +416,8 @@ curl medical-frontend.on-premise.svc:3000
 
 ```
 oc create deployment java-danger  --image quay.io/linxianer12/java-danger-log4j:0.0.1 
-
 ```
+
 เมื่อเรา Deploy เสร็จแล้วเราจะลองเข้าไปดูที่ Tabs Violations และพบว่ามี Policy Log4Shell บันทึกเวลาเอาไว้แต่ปัญหาของเราตอนนี้คือ Application ที่มีช่องโหว่ได้เข้าไปทำงานใน Cluster เรียบร้อยแล้ว
 
 ![redhat-advance-cluster-security](images/policy/detect-log4shell.png)
@@ -461,52 +461,56 @@ oc create deployment java-danger  --image quay.io/linxianer12/java-danger-log4j:
 ภาพสุดท้ายจากผลลัพธ์จะต้องมีไอคอนสีเขียวนำหน้าจัว Poliy ที่ Thai-Cluster
 ![redhat-advance-cluster-security](images/policy/ls.png)
 
-
-
-
-```
-roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-7q7o5f-4b4a324f027aea19c5cbc0c3275c4656-0000.hkg02.containers.appdomain.cloud:443 --image quay.io/linxianer12/java-danger-log4j:0.0.4  --token-file token
-```
-
-
-
-https://docs.openshift.com/acs/3.66/installing/install-ocp-operator.html
-
-On the RHACS portal, navigate to Platform Configuration → Integrations.
-
-Under the Authentication Tokens section, click on Cluster Init Bundle.
-
-Click New Integration.
-
-Enter a name for the cluster init bundle and click Generate.
-
-Click Download Kubernetes Secret File to download the generated bundle.
-
+จากนั้นให้เราลบ Deployment เดิมออกไปและทำการ deploy ใหม่อีกครั้ง
 
 ```
-oc run shell --labels=app=shellshock,team=test-team --image=quay.io/linxianer12/vulnerables:cve-2014-6271 
 
-oc run samba --labels=app=rce  --image=docker.io/vulnerables/cve-2017-7494 
-
-roxctl deployment check --file deplyoment.yaml --endpoint central-rhacs-operator.itzroks-666000ldq2-2vqn82-6ccd7f378ae819553d37d5f2ee142bd6-0000.jp-tok.containers.appdomain.cloud:443  --token-file token
-
-roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-2vqn82-6ccd7f378ae819553d37d5f2ee142bd6-0000.jp-tok.containers.appdomain.cloud:443 --image quay.io/linxianer12/java-danger-log4j:0.0.1  -f  --token-file token
-
-roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-2vqn82-6ccd7f378ae819553d37d5f2ee142bd6-0000.jp-tok.containers.appdomain.cloud:443 --image quay.io/linxianer12/im-in-frontend:0.0.3  -f  --token-file token 
-
-roxctl image scan --endpoint central-rhacs-operator.itzroks-666000ldq2-2vqn82-6ccd7f378ae819553d37d5f2ee142bd6-0000.jp-tok.containers.appdomain.cloud:443 --image quay.io/linxianer12/vulnerables:cve-2014-6271  -f  --token-file token 
-
-#  have >=High Severity Vulnerable but Fixable in next release already
+oc delete deployment java-danger
 
 oc create deployment java-danger  --image quay.io/linxianer12/java-danger-log4j:0.0.1 
+```
 
+จากนั้นเราจะพบเจอกกับผลลัพธ์ดั่งภาพนี้แสดงว่าการ Block Deploy Application ที่มีช่องโหว่ Log4Shell นั้นทำได้สำเร็จ
+
+![redhat-advance-cluster-security](images/policy/block-4j.png)
+
+Logs ที่เกิดขึ้นครั้งนี้จะมีการแสดง Enforced แล้วว่าถูก Block ณ จังหวะการสร้าง Deplyoment
+
+![redhat-advance-cluster-security](images/policy/block-4j-ls.png)
+
+สามารถเข้าไปดูรายละเอียดการ Block ได้ว่ามาจาก Namespace ไหน Application อะไร
+
+![redhat-advance-cluster-security](images/policy/4shell-detail.png)
+
+ผลลัพธ์รายละเอียดเฉพาะ Image
+
+![redhat-advance-cluster-security](images/scan/scan-detail.png)
+
+รายการของ Image ที่ผ่านการ Scan ทั้งหมด
+
+![redhat-advance-cluster-security](images/scan/ls-image.png)
+
+โดยต่อไปเราจะทดลองกับ Application ที่มี Vulnerability เริ่มตั้งแต่ High แต่ว่าใน Image นั้นมี Image Fix ออกมาแล้วให้แก้ไขก็จะทำการ Block Image นั้นให้กลับไปที่ Tabs Platform Configuration > System Policies และค้นหา Policies `FIXABLE SEVERITY AT LEAST IMPORTANT
+
+โดยให้เราทำเหมือนเดิมคือต้องเปิด Policies ตอน Deployment จากการให้เราเข้าไปกด Edit
+![redhat-advance-cluster-security](images/scan/fixable.png)
+
+จำกัด Scope เฉพาะ namespace `business-partner-network` บน `thai-cluster`
+![redhat-advance-cluster-security](images/scan/scope.png)
+
+
+Toggle Feature ให้เปิดใช้งานป้องกันตอน Deployment Time
+![redhat-advance-cluster-security](images/scan/enable-fix.png)
+
+ทดลอง Deploy Image 
+```
 # have >=High Severity Vulnerable but Fixable in next release already
 oc create deployment im-in-frontend --image quay.io/linxianer12/im-in-frontend:0.0.3
-
-# have >=High Severity Vulnerable but Fixable in next release already
-oc create deployment todoapp-frontend --image quay.io/linxianer12/todoapp-frontend:1.0.0
-
-# Not have Fixable yet
-oc create deployment shellshock --image quay.io/linxianer12/vulnerables:cve-2014-6271
-
 ```
+
+![redhat-advance-cluster-security](images/scan/block.png)
+
+ถ้าลองมาดู Image `quay.io/linxianer12/im-in-frontend:0.0.3` ก็จะพบว่ามี Fixable ใน Version ใหม่แล้วเราเลย Deploy Image ไม่ได้นั่นเอง
+
+![redhat-advance-cluster-security](images/scan/fix-image.png)
+

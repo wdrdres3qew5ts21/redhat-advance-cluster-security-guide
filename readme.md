@@ -377,7 +377,7 @@ curl medical-frontend.on-premise.svc:3000
 ```
 ![redhat-advance-cluster-security](images/network/connect-onprem.png)
 
-จากนั้นเราจะลองกลับไปดูที่ Network Topology กัน (ลอง Refresh หน้า Console ของ Central Advance Cluster Security สักครั้งหนึ่ง) จะเห็นมีเส้นการเชื่อมต่อเกิดขึ้นระหว่าง Namespace `business-partner-network` และ`on-premise` มีเส้นลากระหว่างกันและมีเลข 2 อยู่ระหว่างเส้นซึ่งมีถึงมี 2 Flow Traffic สองแบบที่เกิดขึ้นแล้ว
+จากนั้นเราจะลองกลับไปดูที่ Network Topology กัน (ลอง Refresh หน้า Console ของ Central Advance Cluster Security สักครั้งหนึ่ง) จะเห็นมีเส้นการเชื่อมต่อเกิดขึ้นระหว่าง Namespace `business-partner-network` และ `on-premise` มีเส้นลากระหว่างกันและมีเลข 2 อยู่ระหว่างเส้นซึ่งมีถึงมี 2 Flow Traffic สองแบบที่เกิดขึ้นแล้ว
 
 ![redhat-advance-cluster-security](images/network/part-prem.png)
 
@@ -409,7 +409,24 @@ curl medical-frontend.on-premise.svc:3000
 และถ้าเราเข้าไปดูเพิ่มเติมที่ Policy ที่ถูกละเมิดซึ่งก็ตรงกับที่เราแปะ Mark Traffic เอาไว้เลยนั่นเอง
 ![redhat-advance-cluster-security](images/network/violate-detail.png)
 
-แต่ความน่าสนใจก็คือจากที่เราเห็นแล้วว่าเอ๊ะมันแจ้งเตือน Traffic ใ้แต่เหมือนมันจะไมไ่ด้ Block Traffic ให้ในทันทีเป็นเพราะอะไรกันนะ ? ถ้าเรายังจำตรงหน้าแสดงรายการทั้งหมดของ Violation ได้เราจะเห็นว่าตรง Column enforced นั้นถูกต้องค่าไว้เป็น no ทำให้การบังคับไม่เกิดขึ้นนั่นเองเพียงแต่มีการ Logs เก็บข้อมูลเอาไว้ดังนั้นแล้วสำหรับหัวข้อต่อไปที่เกือบจะใกล้ถึงการตรวจจับ Log4Shell ของเราก็ใกล้มาถึงแล้วจริงๆ (น้ำตาไหลมากกก) แต่ตอนนี้เพื่อนๆน่าจะเห็นว่าด้วยเทคนิคของ eBPF ทำให้การตรวจจับ Traffic ระดับ Low Level นั้นเกิดขึ้นได้จริงในสภาพแวดล้อมของ Linux ปัจจุบันนั่นเอง
+โดยถ้าเราอยากจะ Block Network จริงๆก็สามารถ Generate `NetworkPolicy`  https://kubernetes.io/docs/concepts/services-networking/network-policies/ โดยตรงได้จาก GUI เช่นเดียวกันแล้วเรานำไป Apply ใน Cluster ของเราแบบ `yaml` download ลงมาแล้ว apply หรือจะกดโดยตรงผ่าน GUI เลยก็ได้
+
+เริ่มจากตอนแรกให้เราไปที่ Topology แล้วเลือก Application `medical-frontend` ที่ทำงานอยู่ใน namespace `on-premise` ที่สังเกตว่าจะมีเส้นเชื่อมโยงไปหา `business-partner-network` namespace ที่เป็นคนส่ง traffic มา
+![redhat-advance-cluster-security](images/np/prepare.png)
+
+จากนั้นสลับ tabs จาก network flow ไปยัง `baseline srttings` แทน
+![redhat-advance-cluster-security](images/np/pre-base.png)
+
+กดเลือก Simulate Baseline as Network Policy เพื่อให้ Advanced Cluster Security Generate `NetworkPolicy` ทั้งหมดแบบจำลองมาก่อน
+![redhat-advance-cluster-security](images/np/apply.png)
+
+ลองเข้าไปดู `NetworkPolicy` ใน namespace `on-premise` ก็จะพบรายการของ `NetworkPolicy` 
+![redhat-advance-cluster-security](images/np/result.png)
+
+รายละเอียดของ Network
+![redhat-advance-cluster-security](images/np/detail.png)
+
+แต่ความน่าสนใจก็คือจากที่เราเห็นแล้วว่าเอ๊ะมันแจ้งเตือน Traffic ใ้แต่เหมือนมันจะไมไ่ด้ Block Traffic ให้ในทันทีเป็นเพราะอะไรกันนะ ? ถ้าเรายังจำตรงหน้าแสดงรายการทั้งหมดของ Violation ได้เราจะเห็นว่าตรง Column enforced นั้นถูกต้องค่าไว้เป็น no ทำให้การบังคับไม่เกิดขึ้นนั่นเองเพียงแต่มีการ Logs เก็บข้อมูลเอาไว้ดังนั้นแล้วสำหรับหัวข้อต่อไปที่เกือบจะใกล้ถึงการตรวจจับ Log4Shell ของเราก็ใกล้มาถึงแล้วจริงๆ (น้ำตาไหลมากกก 5555) แต่ตอนนี้เพื่อนๆน่าจะเห็นว่าด้วยเทคนิคของ eBPF ทำให้การตรวจจับ Traffic ระดับ Low Level นั้นเกิดขึ้นได้จริงในสภาพแวดล้อมของ Linux ปัจจุบันนั่นเอง
 
 ### Customize Policy และการสั่งบังคับใช้งานให้ตรวจจับช่องโหว่ Security
 ให้เรากลับไปที่ `business-partner-network` Namespace และลองสร้าง Deplyoment โดยใช้คำสั่งดั่งนี้ ซึ่งจะใช้ image ที่มีช่องโหว่ Log4Shell   

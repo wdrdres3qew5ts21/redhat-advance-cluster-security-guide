@@ -403,7 +403,7 @@ curl medical-frontend.on-premise.svc:3000
 
 ![redhat-advance-cluster-security](images/network/add-anomaly.png)
 
-หลังจากที่แปะป้ายว่า Flow Traffic แบบนี้มีความผิดปกติแล้วให้เราสลับไปที่ Tab ชื่อว่า BaseLine ด้านขวาของ Network Flow และกดเปิด `ALERT ON BASELINE VIOLATIONS` ให้ Toggle กลายเป็นสีเขียวจะแปลว่ากำลังเปิดใช้งาน (ถ้าเพื่อนๆสังเกตดูก็จะมี CIDR Block แบบ Network ได้ด้วยนะเช่นอยาก Block 8.8.8.8 หรือวง Network ที่ไม่อยากให้ไปก็ทำได้) หลังจากนั้นเราจะกลับไปที่ Terminal ของเราที่กำลัง exec อยู่ใน pod ของ namespace `business-partner-network` กันเพื่อทดสอบอีกครั้งหนึ่ง
+หลังจากที่แปะป้ายว่า Flow Traffic แบบนี้มีความผิดปกติแล้วให้เราสลับไปที่ Tab ชื่อว่า BaseLine ด้านขวาของ Network Flow และกดเปิด `ALERT ON BASELINE VIOLATIONS` ให้ Toggle กลายเป็นสีเขียวจะแปลว่ากำลังเปิดใช้งาน หลังจากนั้นเราจะกลับไปที่ Terminal ของเราที่กำลัง exec อยู่ใน pod ของ namespace `business-partner-network` กันเพื่อทดสอบอีกครั้งหนึ่ง
 
 ![redhat-advance-cluster-security](images/network/enable-alert-anomaly.png)
 

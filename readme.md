@@ -11,7 +11,7 @@
 ![redhat-advance-cluster-security](images/intro/support-matrix.png)
 
 ### Advance Cluster Security ทำงานได้อย่างไรและใช้เทคนิคอะไรเบื้องหลังกันนะ ?
-สำหรับตัวอย่างที่เราจะมาทดลองกันในวันนี้จะประกอบไปด้วยของตรวจจับ CVE ช่องโหว่ของ Log4Shell โดยตรงและตรวจจับ Pod ที่มีพฤติกรรมการทำงานแล้วขัดกับกฏที่เราตั้งเอาไว้ใน Cluster อย่างเช่นห้ามมี User ใช้คำสั่งเข้าไปใน Pod โดยตรงเพื่อความปลอดภัยเพราะบาง Pod ก็อาจจะมี ServiceAccount ที่มี Credentials สามารถต่อตรงไปหา Kube API Server ได้อย่างเช่น Pod ที่ใช้ใน Pipeline CI/CD แล้วเราสั่งให้ Pod นั้นสามารถใช้คำสั่ง kubectl หรือเชื่อมไปหา Kube API Server แล้วเกิดเราไม่ได้จำกัดสิทธิจะกลายเป็นว่า Pod ใน Pipeline CI/CD จะกลายเป้นจุดที่น่ากลัวมากเพราะ Pod CI/CD ของเราอาจจะไปลบหรือแอบไป Deploy อะไรก็ได้จาก User หรือใครที่เข้ามาถึง Pod นี้ได้ ดังนั้นเพื่อความปลอดภัยเราก็อาจจะห้ามมีการ exec เข้าไปใน Pod โดยตรงเลยนั่นเอง ซึ่งมาตรงถึงจุดนี้เพื่อนๆก็อาจจะสงสัยบ้างวา เอ๊แล้วมันรู้ได้ยังไงกันนะว่ามันมีอะไรเกิดขึ้นใน Cluster ของเราแล้วมันไปตรงกับกฏได้ยังไงกันนะ ? ซึ่งในปกติแล้ว Kubernetes ก็จะมี Audit Logs ให้เราสามารถเข้าไปดูเหตุการณ์ที่เกิดขึ้นใน Cluster ได้เช่นกัน https://kubernetes.io/docs/tasks/debug-application-cluster/audit และก็จะมี Admission Controller https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/ ซึ่งเป็นเสมือน Filter ตัวหนึ่งที่มาขั้นในช่วงกลางระหว่างที่ Request ของเราก่อนที่จะถูกส่งไปถึง Kubernetes API Server ก็คือ Admission Controller
+สำหรับตัวอย่างที่เราจะมาทดลองกันในวันนี้จะประกอบไปด้วยของตรวจจับ CVE ช่องโหว่ของ Log4Shell โดยตรงและตรวจจับ Pod ที่มีพฤติกรรมการทำงานแล้วขัดกับกฏที่เราตั้งเอาไว้ใน Cluster อย่างเช่นห้ามมี User ใช้คำสั่งเข้าไปใน Pod โดยตรงเพื่อความปลอดภัยเพราะบาง Pod ก็อาจจะมี ServiceAccount ที่มี Credentials สามารถต่อตรงไปหา Kube API Server ได้อย่างเช่น Pod ที่ใช้ใน Pipeline CI/CD แล้วเราสั่งให้ Pod นั้นสามารถใช้คำสั่ง kubectl หรือเชื่อมไปหา Kube API Server แล้วเกิดเราไม่ได้จำกัดสิทธิจะกลายเป็นว่า Pod ใน Pipeline CI/CD จะกลายเป็นจุดที่น่ากลัวมากเพราะ Pod CI/CD ของเราอาจจะไปลบหรือแอบไป Deploy อะไรก็ได้จาก User หรือใครที่เข้ามาถึง Pod นี้ได้ ดังนั้นเพื่อความปลอดภัยเราก็อาจจะห้ามมีการ exec เข้าไปใน Pod โดยตรงเลยนั่นเอง ซึ่งมาตรงถึงจุดนี้เพื่อนๆก็อาจจะสงสัยบ้างวา เอ๊แล้วมันรู้ได้ยังไงกันนะว่ามันมีอะไรเกิดขึ้นใน Cluster ของเราแล้วมันไปตรงกับกฏได้ยังไงกันนะ ? ซึ่งในปกติแล้ว Kubernetes ก็จะมี Audit Logs ให้เราสามารถเข้าไปดูเหตุการณ์ที่เกิดขึ้นใน Cluster ได้เช่นกัน https://kubernetes.io/docs/tasks/debug-application-cluster/audit และก็จะมี Admission Controller https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/ ซึ่งเป็นเสมือน Filter ตัวหนึ่งที่มาขั้นในช่วงกลางระหว่างที่ Request ของเราก่อนที่จะถูกส่งไปถึง Kubernetes API Server ก็คือ Admission Controller
 
 ![redhat-advance-cluster-security](images/intro/admission.png)
 
@@ -22,7 +22,7 @@
 สำหรับอีกคำถามหนึ่งหลังจากที่เรามีการตรวจจับหรือ Block จังหวะขาเข้ากำลังจะสร้าง (Deploy-Time) Object ไปยัง Kubernetes API Server ได้แล้วผ่าน Admission Controller เรามีเทคนิคอะไรอีกในการตรวจจับสิ่งที่ทำงานไปแล้ว (Run-time) ? 
 และสำหรับการเก็บข้อมูลในจังหวะที่ Pod ของเรานั้นทำงานไปใน Cluster แล้วจะใช้เทคโนโลยีที่อยู่ใน Linux อยู่แล้วที่ชื่อว่า eBPF (Extended Berkeley Packet Filter) ซึ่งจริงๆแล้วก็เกิดมาจาก BPF (Berkeley Packet Filter) 
 
-โดยสรุปการทำงานของโปรแกรม eBPF แบบเข้าใจง่ายคร่าวๆก็คือการที่เราเข้าใจว่า Linux นั้นมีการแบ่ง Memory เป็น Kernel และ User Space ซึ่งใน Kernel Space ก็คือจัดที่ Low Level Programming นั้นทำงานเพื่อควบคุม CPU, Memory, Drivers ต่างๆซึ่งโดยปกติแล้วผู้ใช้ทั่วๆไปไม่สามารถเข้าไปเข้าถึงส่วนนี้ได้อยู่แล้ว ส่วนใน User Space ก็คือส่วนใดๆที่ไม่ใช่ Process ที่ทำงานใน Kernel Process นั่นเองซึ่งก็จะถูกจำกัดการเข้าถึง Hardware การทำงานก็จะเป้นว่าถ้า Network ต้องการจะส่ง Packet ก็จะต้องผ่านจาก User Space ไปยัง Kernel Space และค่อยส่งไปหา Hardware อย่าง Network Card Driver ซึ่งการทำงานแบบนี้เรียกว่า System Call นั่นเอง ซึ่ง eBPF คือเทคโนโลยีปัจจุบันที่มีอยู่ใน Linux ตั้งแต่ Kernel 3.18 และถ้าอยากจะใช้แบบสมบูรณ์ต้องการอย่างน้อย Kernel 4.4 ขึ้นไป ซึ่ง eBPF นั้นทำให้ Program ที่ทำงานทั่วๆไปใน Userspace สามารถไปทำงานใน Kernel Space แบบ Bytecode ได้ซึ่งโปรแกรมที่จะทำงานได้นั้นต้องผ่านการเช็คก่อนว่ารันแล้วจะไม่ Crash ไม่อย่างนั้นก็จะทำให้ Host เราดับไปเลยนั่นเองเพราะโปรแกรมใน Kernel Space เกิด Crash ขึ้นมา และด้วยเทคนิคนี้ทำให้เราไม่จำเป็นต้อง Compile Build Linux ใหม่ทั้ง Distro ด้วยตัวเองเพื่อนำโปรแกรมไปรันใน Kernel Space ซึ่งตรงนี้คือแนวคิดคร่าวๆว่าหลังจากนี้ Program พิเศษๆที่ทำให้เราสามารถ Monitor หรือเข้าถึงใช้งาน Resource ของ Host Linux นั้นเกิดขึ้นได้อย่างไรโดยที่ทุกคนไม่ต้องไปเขียน Hardcode ลงไปใน OS แล้ว Build ใหม่ทั้ง Distro แต่สามารถเกาะผ่าน eBPF ไปได้เลยโดยตรง (หัวข้อนี้สำหรับผมเองคือเปิดมิติ Galaxy ใหม่ไปไกลมาก 55555 เพราะปกติไม่ได้ยุ่งกับ OS มากเท่าไหร่ แต่พยายามสรุปมาให้เพื่อนๆอ่านนะครับ)
+โดยสรุปการทำงานของโปรแกรม eBPF แบบเข้าใจง่ายคร่าวๆก็คือการที่เราเข้าใจว่า Linux นั้นมีการแบ่ง Memory เป็น Kernel และ User Space ซึ่งใน Kernel Space ก็คือจัดที่ Low Level Programming นั้นทำงานเพื่อควบคุม CPU, Memory, Drivers ต่างๆซึ่งโดยปกติแล้วผู้ใช้ทั่วๆไปไม่สามารถเข้าไปเข้าถึงส่วนนี้ได้อยู่แล้ว ส่วนใน User Space ก็คือส่วนใดๆที่ไม่ใช่ Process ที่ทำงานใน Kernel Process นั่นเองซึ่งก็จะถูกจำกัดการเข้าถึง Hardware การทำงานก็จะเป็นว่าถ้า Network ต้องการจะส่ง Packet ก็จะต้องผ่านจาก User Space ไปยัง Kernel Space และค่อยส่งไปหา Hardware อย่าง Network Card Driver ซึ่งการทำงานแบบนี้เรียกว่า System Call นั่นเอง ซึ่ง eBPF คือเทคโนโลยีปัจจุบันที่มีอยู่ใน Linux ตั้งแต่ Kernel 3.18 และถ้าอยากจะใช้แบบสมบูรณ์ต้องการอย่างน้อย Kernel 4.4 ขึ้นไป ซึ่ง eBPF นั้นทำให้ Program ที่ทำงานทั่วๆไปใน Userspace สามารถไปทำงานใน Kernel Space แบบ Bytecode ได้ซึ่งโปรแกรมที่จะทำงานได้นั้นต้องผ่านการเช็คก่อนว่ารันแล้วจะไม่ Crash ไม่อย่างนั้นก็จะทำให้ Host เราดับไปเลยนั่นเองเพราะโปรแกรมใน Kernel Space เกิด Crash ขึ้นมา และด้วยเทคนิคนี้ทำให้เราไม่จำเป็นต้อง Compile Build Linux ใหม่ทั้ง Distro ด้วยตัวเองเพื่อนำโปรแกรมไปรันใน Kernel Space ซึ่งตรงนี้คือแนวคิดคร่าวๆว่าหลังจากนี้ Program พิเศษๆที่ทำให้เราสามารถ Monitor หรือเข้าถึงใช้งาน Resource ของ Host Linux นั้นเกิดขึ้นได้อย่างไรโดยที่ทุกคนไม่ต้องไปเขียน Hardcode ลงไปใน OS แล้ว Build ใหม่ทั้ง Distro แต่สามารถเกาะผ่าน eBPF ไปได้เลยโดยตรง (หัวข้อนี้สำหรับผมเองคือเปิดมิติ Galaxy ใหม่ไปไกลมาก 55555 เพราะปกติไม่ได้ยุ่งกับ OS มากเท่าไหร่ แต่พยายามสรุปมาให้เพื่อนๆอ่านนะครับ)
 สามารถอ่านเพิ่มได้ที่ https://www.infoq.com/articles/gentle-linux-ebpf-introduction/
 
 ![redhat-advance-cluster-security](images/ebpf/timeline.png)
@@ -257,7 +257,7 @@ stringData:
     mockkkkkkkkkkk
     -----END CERTIFICATE-----
 ```
-ใช้คำสั่งและ apply ไฟล์ที่เราเป้นคน generate มาเอง
+ใช้คำสั่งและ apply ไฟล์ที่เราเป็นคน generate มาเอง
 
 ```
 oc project
@@ -392,7 +392,7 @@ curl medical-frontend.on-premise.svc:3000
 
 ![redhat-advance-cluster-security](images/network/add-anomaly.png)
 
-หลังจากที่แปะป้ายว่า Flow Traffic แบบนี้มีความผิดปกติแล้วให้เราสลับไปที่ Tab ชื่อว่า BaseLine ด้านขวาของ Network Flow และกดเปิด `ALERT ON BASELINE VIOLATIONS` ให้ Toggle กลายเป้นสีเขียวจะแปลว่ากำลังเปิดใช้งาน (ถ้าเพื่อนๆสังเกตดูก็จะมี CIDR Block แบบ Network ได้ด้วยนะเช่นอยาก Block 8.8.8.8 หรือวง Network ที่ไม่อยากให้ไปก็ทำได้) หลังจากนั้นเราจะกลับไปที่ Terminal ของเราที่กำลัง exec อยู่ใน pod ของ namespace `business-partner-network` กันเพื่อทดสอบอีกครั้งหนึ่ง
+หลังจากที่แปะป้ายว่า Flow Traffic แบบนี้มีความผิดปกติแล้วให้เราสลับไปที่ Tab ชื่อว่า BaseLine ด้านขวาของ Network Flow และกดเปิด `ALERT ON BASELINE VIOLATIONS` ให้ Toggle กลายเป็นสีเขียวจะแปลว่ากำลังเปิดใช้งาน (ถ้าเพื่อนๆสังเกตดูก็จะมี CIDR Block แบบ Network ได้ด้วยนะเช่นอยาก Block 8.8.8.8 หรือวง Network ที่ไม่อยากให้ไปก็ทำได้) หลังจากนั้นเราจะกลับไปที่ Terminal ของเราที่กำลัง exec อยู่ใน pod ของ namespace `business-partner-network` กันเพื่อทดสอบอีกครั้งหนึ่ง
 
 ![redhat-advance-cluster-security](images/network/enable-alert-anomaly.png)
 
@@ -514,3 +514,4 @@ oc create deployment im-in-frontend --image quay.io/linxianer12/im-in-frontend:0
 
 ![redhat-advance-cluster-security](images/scan/fix-image.png)
 
+เพียงเท่านี้เพื่อนๆก็จะได้การ Protected Cluster Openshift อย่างง่ายๆได้แล้ว ซึ่งถ้าเพื่อนๆพี่ๆมีข้อสงสัยอะไรก็สามารถแปะคำถามมาได้เลยนะคับผม ~

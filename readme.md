@@ -439,6 +439,8 @@ oc create deployment java-danger  --image quay.io/linxianer12/java-danger-log4j:
 
 ซึ่งตอนกด Clone มาครั้งแรกจะต้องเห็นว่า Policy นั้นกำลังโดน Disable อยู่เป็นผลมาจากการที่ตัวต้นฉบับก็โดน Disabled อยู่นั่นเอง (ซึ่งตัว Template ก็สามารถปิดผ่านหน้าตรงนี้ได้เหมือนกัน) 
 
+![redhat-advance-cluster-security](images/policy/need.png)
+
 จากนั้นให้เราเปิดเป็น Enable เพื่อที่จะให้การบันทึกเหตุการณ์ Violation ของตัวที่ถูก Clone มาทำงานอีกครั้งหนึ่งและเปลี่ยนชื่อใหม่โดยระบุชื่อ Cluster เราลงไปในชื่อกฏเพื่อให้จำได้ง่ายว่าเป็นกฏที่เราตั้ง Custom ขึ้นมาใหม่เอง
 
 ![redhat-advance-cluster-security](images/policy/required.png)

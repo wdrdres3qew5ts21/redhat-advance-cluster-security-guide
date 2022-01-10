@@ -403,7 +403,7 @@ curl medical-frontend.on-premise.svc:3000
 ```
 ![redhat-advance-cluster-security](images/network/violence-call.png)
 
-จากนั้นเราจะกลับไปที่ Console ของ Central ใหม่และไปดูกันโดยให้เรากลับเข้าไปที่ Tabs Violation ซึ่งหมายถึงการสรุปเหตุการณ์ที่ละเมิดกฏต่างๆที่เราตั้งไว้ทั้งหมดนั่นเอง เราจะพบว่ามีเหตุการณ์ที่ชื่อ `Unauthorized Network Flow` เกิดขึ้น (ลอง Sorting เวลาได้นะจะได้เห็นเหตุการณ์ล่าสุดอยู๋ข้างบนสุด)
+จากนั้นเราจะกลับไปที่ Console ของ Central ใหม่และไปดูกันโดยให้เรากลับเข้าไปที่ Tabs Violation ซึ่งหมายถึงการสรุปเหตุการณ์ที่ละเมิดกฏต่างๆที่เราตั้งไว้ทั้งหมดนั่นเอง เราจะพบว่ามีเหตุการณ์ที่ชื่อ `Unauthorized Network Flow` เกิดขึ้น (ลอง Sorting เวลาได้นะจะได้เห็นเหตุการณ์ล่าสุดอยู่ข้างบนสุด)
 ![redhat-advance-cluster-security](images/network/ls-violate.png)
 
 และถ้าเราเข้าไปดูเพิ่มเติมที่ Policy ที่ถูกละเมิดซึ่งก็ตรงกับที่เราแปะ Mark Traffic เอาไว้เลยนั่นเอง

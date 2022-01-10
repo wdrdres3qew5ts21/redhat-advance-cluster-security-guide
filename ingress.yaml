@@ -1,0 +1,15 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  creationTimestamp: "2022-01-08T12:26:05Z"
+  labels:
+    network-policy-generator.stackrox.io/from-baseline: "true"
+  name: stackrox-baseline-generated-partner-portal
+  namespace: business-partner-network
+  uid: d6abd452-9d7d-4ff1-a57b-4292eba47681
+spec:
+  podSelector:
+    matchLabels:
+      app: partner-portal
+  policyTypes:
+  - Ingress

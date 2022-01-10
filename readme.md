@@ -409,11 +409,57 @@ curl medical-frontend.on-premise.svc:3000
 และถ้าเราเข้าไปดูเพิ่มเติมที่ Policy ที่ถูกละเมิดซึ่งก็ตรงกับที่เราแปะ Mark Traffic เอาไว้เลยนั่นเอง
 ![redhat-advance-cluster-security](images/network/violate-detail.png)
 
-แต่ความน่าสนใจก็คือจากที่เราเห็นแล้วว่าเอ๊ะมันแจ้งเตือน Traffic ใ้แต่เหมือนมันจะไมไ่ด้ Block Traffic ให้ในทันทีเป็นเพราะอะไรกันนะ ? ถ้าเรายังจำตรงหน้าแสดงรายการทั้งหมดของ Violation ได้เราจะเห็นว่าตรง Column enforced นั้นถูกต้องค่าไว้เป็น no ทำให้การบังคับไม่เกิดขึ้นนั่นเองเพียงแต่มีการ Logs เก็บข้อมูลเอาไว้ดังนั้นแล้วสำหรับหัวข้อต่อไปที่เกือบจะใกล้ถึงการตรวจจับ Log4Shell ของเราก็ใกล้มาถึงแล้วจริงๆ (น้ำตาไหลมากกก) แต่ตอนนี้เพื่อนๆน่าจะเห็นว่าด้วยเทคนิคของ eBPF ทำให้การตรวจจับ Traffic ระดับ Low Level นั้นเกิดขึ้นได้จริงในสภาพแวดล้อมของ Linux ยุคปัจจุบันนั่นเอง
+แต่ความน่าสนใจก็คือจากที่เราเห็นแล้วว่าเอ๊ะมันแจ้งเตือน Traffic ใ้แต่เหมือนมันจะไมไ่ด้ Block Traffic ให้ในทันทีเป็นเพราะอะไรกันนะ ? ถ้าเรายังจำตรงหน้าแสดงรายการทั้งหมดของ Violation ได้เราจะเห็นว่าตรง Column enforced นั้นถูกต้องค่าไว้เป็น no ทำให้การบังคับไม่เกิดขึ้นนั่นเองเพียงแต่มีการ Logs เก็บข้อมูลเอาไว้ดังนั้นแล้วสำหรับหัวข้อต่อไปที่เกือบจะใกล้ถึงการตรวจจับ Log4Shell ของเราก็ใกล้มาถึงแล้วจริงๆ (น้ำตาไหลมากกก) แต่ตอนนี้เพื่อนๆน่าจะเห็นว่าด้วยเทคนิคของ eBPF ทำให้การตรวจจับ Traffic ระดับ Low Level นั้นเกิดขึ้นได้จริงในสภาพแวดล้อมของ Linux ปัจจุบันนั่นเอง
 
 ### Customize Policy และการสั่งบังคับใช้งานให้ตรวจจับช่องโหว่ Security
+ให้เรากลับไปที่ `business-partner-network` Namespace และลองสร้าง Deplyoment โดยใช้คำสั่งดั่งนี้ ซึ่งจะใช้ image ที่มีช่องโหว่ Log4Shell   
 
+```
+oc create deployment java-danger  --image quay.io/linxianer12/java-danger-log4j:0.0.1 
 
+```
+เมื่อเรา Deploy เสร็จแล้วเราจะลองเข้าไปดูที่ Tabs Violations และพบว่ามี Policy Log4Shell บันทึกเวลาเอาไว้แต่ปัญหาของเราตอนนี้คือ Application ที่มีช่องโหว่ได้เข้าไปทำงานใน Cluster เรียบร้อยแล้ว
+
+![redhat-advance-cluster-security](images/policy/detect-log4shell.png)
+
+ซึ่งถ้าเราไม่ต้องการให้ Application ที่มีช่องโหว่เข้าไปในจังหวะการ Deploy เราจะทำได้อย่างไรกันนะ ? นั่นก็คือการที่ให้เราลองสังเกตที่ Column คำว่า `Enforced: no` ซึ่งตอนนี้ยังเป็นคำว่า No นั่นหมายความว่ามีกฏนั้นไม่ได้ถูกบังคับใช้นั่นเองเราจึงต้องไปสั่งบังคับให้กฏถูกใช้งานก่อนโดยไปที่ Tabs Platform Configuration > System Policies
+จากนั้นให้เราค้นหาช่องโหว่ชื่อว่า log4shell ใน tabs ค้นหา
+
+![redhat-advance-cluster-security](images/policy/search-log.png)
+
+เลื่อนมา Hover ที่ Tabs Log4Shell โดยเฉพาะและกด disable กฏเดิมที่มีอยู่ปัจจุบันไป
+
+![redhat-advance-cluster-security](images/policy/disable.png)
+
+เพราะว่าเราจะสร้าง Policy ขึ้นมาใหม่โดย Clone จาก Template ตัวเดิมที่มีอยู่นี้นั่นเอง แต่จะมีการจำกัด Scope ให้ชัดเจนคือให้ Scan ตรวจจับเฉพาะ Cluster `thai-cluster` และ Namespace `business-partner-network` 
+
+เลือกที่ Template Policy Log4Shell โดยเฉพาะและกด Clone ดั่งภาพ
+
+![redhat-advance-cluster-security](images/policy/log4shell-template.png)
+
+ซึ่งตอนกด Clone มาครั้งแรกจะต้องเห็นว่า Policy นั้นกำลังโดน Disable อยู่เป็นผลมาจากการที่ตัวต้นฉบับก็โดน Disabled อยู่นั่นเอง (ซึ่งตัว Template ก็สามารถปิดผ่านหน้าตรงนี้ได้เหมือนกัน) 
+
+![redhat-advance-cluster-security](images/policy/clone-template.png)
+
+จากนั้นวให้เราเปิดเป็น Enable เพื่อที่จะให้การบันทึกเหตุการณ์ Violation ของตัวที่ถูก Clone มาทำงานอีกครั้งหนึ่งและเปลี่ยนชื่อใหม่โดยระบุชื่อ Cluster เราลงไปในชื่อกฏเพื่อให้จำได้ง่ายว่าเป็นกฏที่เราตั้ง Custom ขึ้นมาใหม่เอง
+
+![redhat-advance-cluster-security](images/policy/clone-template.png)
+
+จากนั้นให้เราเลื่อน Scroll มาข้างล่างและทำการ Filter Scope ของ Cluster ให้เป็น Cluster ที่เราเชื่อมต่ออยู่ (SecuredCluster) และระบุ Namespace เข้าไป ซึ่งเราเราไม่จำกัด Scope ก็จะเป็นการสั่งให้ตรวจจับทั้งหมดเลยนั่นเอง
+
+![redhat-advance-cluster-security](images/policy/scope.png)
+
+จากนั้นให้เรากด next เพื่อไปดูรายละเอียดต่อไปจะพบว่าการตรวจจับ Log4Shell ที่ทำมาเป็น Policy แยกก็มาจากการที่ตัว Template  นั้นมี CVE ของ Log4Shell ให้อยู่แล้วซึ่งจะใช้ข้อมูลจากฐานข้อมูล CVE นั่นเอง
+
+โดยให้เรากด Next ไปเรื่อยๆจนกว่าจะเจอหน้าการบังคับใช้กฏแบบภาพนี้
+
+![redhat-advance-cluster-security](images/policy/to-enable.png)
+
+ให้เรา Enable จังหวะ Deployment ให้เป็น Enforced True ไปเราจะได้สามารถตรวจจับได้ในจังหวะที่ Application กำลังจะ Deploy
+![redhat-advance-cluster-security](images/policy/enable.png)
+
+ภาพสุดท้ายจากผลลัพธ์จะต้องมีไอคอนสีเขียวนำหน้าจัว Poliy ที่ Thai-Cluster
+![redhat-advance-cluster-security](images/policy/ls.png)
 
 
 
